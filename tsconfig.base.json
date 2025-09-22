@@ -15,6 +15,7 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
+      "@delos/db/loan": ["libs/db/loan-db-client/src/index.ts"],
       "@delos/prisma/loan-db": ["libs/db/loan-db-prisma/src/index.ts"]
     }
   },

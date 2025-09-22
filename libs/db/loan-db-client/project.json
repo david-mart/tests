@@ -1,0 +1,9 @@
+{
+  "name": "loan-db-client",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/db/loan-db-client/src",
+  "projectType": "library",
+  "tags": [],
+  "// targets": "to see all targets run: nx show project loan-db-client --web",
+  "targets": {}
+}
