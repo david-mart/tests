@@ -1,0 +1,20 @@
+{
+  "name": "upgrade-second-look-api-e2e",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "implicitDependencies": ["upgrade-second-look-api"],
+  "targets": {
+    "e2e": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{e2eProjectRoot}"],
+      "options": {
+        "jestConfig": "apps/second-look-api/upgrade-e2e/jest.config.ts",
+        "passWithNoTests": true
+      },
+      "dependsOn": [
+        "upgrade-second-look-api:build",
+        "upgrade-second-look-api:serve"
+      ]
+    }
+  }
+}
