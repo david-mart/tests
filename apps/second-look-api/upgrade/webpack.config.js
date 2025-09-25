@@ -8,6 +8,14 @@ module.exports = {
       devtoolModuleFilenameTemplate: '[absolute-resource-path]',
     }),
   },
+  module: {
+    rules: [
+      {
+        test: /\.md$/,
+        use: 'raw-loader',
+      },
+    ],
+  },
   plugins: [
     new NxAppWebpackPlugin({
       target: 'node',
