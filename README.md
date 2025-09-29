@@ -1,96 +1,182 @@
-# DelosHub
+# Delos Hub
 
-<a alt="Nx logo" href="https://nx.dev" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png" width="45"></a>
+A comprehensive monorepo for Delos financial services, built with modern technologies and best practices for scalable development.
 
-✨ Your new, shiny [Nx workspace](https://nx.dev) is ready ✨.
+## 🏗️ Technologies Used
 
-[Learn more about this workspace setup and its capabilities](https://nx.dev/getting-started/intro#learn-nx?utm_source=nx_project&amp;utm_medium=readme&amp;utm_campaign=nx_projects) or run `npx nx graph` to visually explore what was created. Now, let's get you up to speed!
+### Core Framework
+- **[Nx](https://nx.dev/)** - Smart, fast and extensible build system for monorepos
+- **[NestJS](https://nestjs.com/)** - Progressive Node.js framework for building efficient and scalable server-side applications
+- **[TypeScript](https://www.typescriptlang.org/)** - Typed JavaScript at scale
 
-## Run tasks
+### Development Tools
+- **ESLint** - Code linting and formatting
+- **Jest** - Testing framework
+- **Webpack** - Module bundler
+- **Docker** - Containerization support
+- **Yarn** - Package manager
 
-To run tasks with Nx use:
+### API Documentation
+- **Swagger/OpenAPI** - API documentation
+- **Stoplight Elements** - Interactive API documentation
 
-```sh
-npx nx <target> <project-name>
+## 📁 Projects in the Monorepo
+
+### Current Projects
+
+1. **[Second Look API](./apps/@delos/second-look-api/README.md)** - Credit evaluation system API
+   - Advanced analytics for private credit opportunities
+   - Proprietary credit risk models
+   - Automated decisioning capabilities
+
+2. **Frontend** - *Coming Soon*
+   - User interface for the Delos platform
+
+3. **Backend** - *Coming Soon*
+   - Core backend services and infrastructure
+
+### E2E Testing
+- **Second Look API E2E** - End-to-end tests for the Second Look API
+
+## 🚀 Getting Started
+
+### Prerequisites
+- Node.js (v18 or higher)
+- Yarn package manager
+- Docker (optional, for containerized deployment)
+
+### Installation
+
+1. Clone the repository:
+```bash
+git clone <repository-url>
+cd delos-hub
 ```
 
-For example:
-
-```sh
-npx nx build myproject
+2. Install dependencies:
+```bash
+yarn install
 ```
 
-These targets are either [inferred automatically](https://nx.dev/concepts/inferred-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) or defined in the `project.json` or `package.json` files.
+### Running the Second Look API
 
-[More about running tasks in the docs &raquo;](https://nx.dev/features/run-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+#### Development Mode
+```bash
+# Start the API in development mode with hot reload
+nx serve @delos/second-look-api
 
-## Add new projects
-
-While you could add new projects to your workspace manually, you might want to leverage [Nx plugins](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) and their [code generation](https://nx.dev/features/generate-code?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) feature.
-
-To install a new plugin you can use the `nx add` command. Here's an example of adding the React plugin:
-```sh
-npx nx add @nx/react
+# Or using the shorthand
+nx serve second-look-api
 ```
 
-Use the plugin's generator to create new projects. For example, to create a new React app or library:
+#### Production Mode
+```bash
+# Build the application
+nx build @delos/second-look-api
 
-```sh
-# Generate an app
-npx nx g @nx/react:app demo
-
-# Generate a library
-npx nx g @nx/react:lib some-lib
+# Serve the production build
+nx serve @delos/second-look-api --configuration=production
 ```
 
-You can use `npx nx list` to get a list of installed plugins. Then, run `npx nx list <plugin-name>` to learn about more specific capabilities of a particular plugin. Alternatively, [install Nx Console](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) to browse plugins and generators in your IDE.
+#### Docker Deployment
+```bash
+# Build Docker image
+nx docker:build @delos/second-look-api
 
-[Learn more about Nx plugins &raquo;](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) | [Browse the plugin registry &raquo;](https://nx.dev/plugin-registry?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-## Set up CI!
-
-### Step 1
-
-To connect to Nx Cloud, run the following command:
-
-```sh
-npx nx connect
+# Run Docker container
+nx docker:run @delos/second-look-api
 ```
 
-Connecting to Nx Cloud ensures a [fast and scalable CI](https://nx.dev/ci/intro/why-nx-cloud?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) pipeline. It includes features such as:
+### Available Scripts
 
-- [Remote caching](https://nx.dev/ci/features/remote-cache?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Task distribution across multiple machines](https://nx.dev/ci/features/distribute-task-execution?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Automated e2e test splitting](https://nx.dev/ci/features/split-e2e-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Task flakiness detection and rerunning](https://nx.dev/ci/features/flaky-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+#### Development
+```bash
+# Serve applications
+nx serve <project-name>
 
-### Step 2
+# Build applications
+nx build <project-name>
 
-Use the following command to configure a CI workflow for your workspace:
+# Run tests
+nx test <project-name>
 
-```sh
-npx nx g ci-workflow
+# Run linting
+nx lint <project-name>
+
+# Run type checking
+nx typecheck <project-name>
 ```
 
-[Learn more about Nx on CI](https://nx.dev/ci/intro/ci-with-nx#ready-get-started-with-your-provider?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+#### Testing
+```bash
+# Run unit tests
+nx test @delos/second-look-api
 
-## Install Nx Console
+# Run e2e tests
+nx e2e @delos/second-look-api-e2e
 
-Nx Console is an editor extension that enriches your developer experience. It lets you run tasks, generate code, and improves code autocompletion in your IDE. It is available for VSCode and IntelliJ.
+# Run all tests
+nx run-many --target=test
+```
 
-[Install Nx Console &raquo;](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+#### Code Quality
+```bash
+# Lint all projects
+nx run-many --target=lint
 
-## Useful links
+# Type check all projects
+nx run-many --target=typecheck
+```
 
-Learn more:
+## 🔧 Nx Workspace Features
 
-- [Learn more about this workspace setup](https://nx.dev/getting-started/intro#learn-nx?utm_source=nx_project&amp;utm_medium=readme&amp;utm_campaign=nx_projects)
-- [Learn about Nx on CI](https://nx.dev/ci/intro/ci-with-nx?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Releasing Packages with Nx release](https://nx.dev/features/manage-releases?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [What are Nx plugins?](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+This workspace is configured with:
+- **Smart caching** - Nx caches build artifacts and test results
+- **Dependency graph** - Automatic dependency management
+- **Code generation** - Scaffold new features and components
+- **Affected testing** - Only run tests for changed projects
+- **Parallel execution** - Run tasks in parallel when possible
 
-And join the Nx community:
-- [Discord](https://go.nx.dev/community)
-- [Follow us on X](https://twitter.com/nxdevtools) or [LinkedIn](https://www.linkedin.com/company/nrwl)
-- [Our Youtube channel](https://www.youtube.com/@nxdevtools)
-- [Our blog](https://nx.dev/blog?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+### Useful Nx Commands
+
+```bash
+# View project graph
+nx graph
+
+# Show affected projects
+nx affected:graph
+
+# Run affected tests
+nx affected:test
+
+# Generate new project
+nx g @nx/nest:app <app-name>
+
+# Generate new library
+nx g @nx/nest:lib <lib-name>
+```
+
+## 📚 API Documentation
+
+The Second Look API includes comprehensive documentation:
+- **Swagger UI** - Interactive API documentation
+- **Stoplight Elements** - Enhanced API documentation experience
+- **OpenAPI Specification** - Machine-readable API specification
+
+Access the API documentation at: `http://localhost:3000/api` (when running in development mode)
+
+## 🏛️ Architecture
+
+This monorepo follows a structured approach:
+- **Apps** - Deployable applications
+- **Libraries** - Shared code and utilities
+- **E2E Tests** - End-to-end test suites
+- **Docker** - Containerization configurations
+
+## 🤝 Contributing
+
+1. Create a feature branch
+2. Make your changes
+3. Run tests and linting
+4. Submit a pull request
+

@@ -80,6 +80,49 @@
           "Offers"
         ]
       }
+    },
+    "/utils/aac": {
+      "get": {
+        "operationId": "Get Aac Code",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "asdf",
+        "tags": [
+          "Utils"
+        ]
+      }
+    },
+    "/utils/crm": {
+      "get": {
+        "operationId": "Get Crm Code",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Utils"
+        ]
+      }
+    },
+    "/utils/knockout": {
+      "get": {
+        "operationId": "Validate Knockout",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Utils"
+        ]
+      }
     }
   },
   "info": {
