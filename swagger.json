@@ -1,0 +1,817 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/health": {
+      "get": {
+        "operationId": "Get Health",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Health"
+        ]
+      }
+    },
+    "/offers": {
+      "get": {
+        "operationId": "Offers",
+        "parameters": [
+          {
+            "name": "program",
+            "required": true,
+            "in": "header",
+            "description": "A combination of the same values provided in the request body fields:\n  - _applicationInformation.assetType_\n  - _applicationInformation.expandedProgramSegment_\n  - _applicationInformation.channel_ (only `CREDIT_KARMA` and `DIRECT_MAIL_CUSTOM` in `FIRST_LOOK` )\n  - applicationInformation.expandedProgramSubSegment (only `AUTO_REFI` in `FIRST_LOOK` )\n\n  The formula will be : `assetType-expandedProgramSegment_channel-expandedProgramSubSegment`\n\n  Allows investors to implement some infra-level routing based on assetType,\n  segments and channel without having to parse the request body",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "LOAN-TRADITIONAL",
+                "LOAN-FIRST_LOOK",
+                "LOAN-FIRST_LOOK_CREDIT_KARMA",
+                "LOAN-FIRST_LOOK_DIRECT_MAIL_CUSTOM",
+                "LOAN-FIRST_LOOK-AUTO_REFI",
+                "LOAN-FIRST_LOOK_CREDIT_KARMA-AUTO_REFI",
+                "MASTER_LINE-FIRST_LOOK",
+                "MASTER_LINE-FIRST_LOOK_CREDIT_KARMA",
+                "MASTER_LINE-TRADITIONAL"
+              ]
+            }
+          },
+          {
+            "name": "request-type",
+            "required": true,
+            "in": "header",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "SCORING",
+                "ALLOCATION",
+                "INCOME_VERIFICATION"
+              ],
+              "description": "- _SCORING_ - use when the request is made to score offers\n  - _ALLOCATION_ - use when the request is made for allocation purposes\n  - _INCOME_VERIFICATION_ - use when the request is made for income\n  verification purposes"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GetOffersRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetOffersResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Offers"
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "Upgrade - Second Look API",
+    "description": "## Upgrade Second Look Credit Policy And Underwriting Guidelines\n\n## Introduction  \n**Redefining what's possible in private credit**\n\nDelos Marketplace opens the door to exclusive direct lending opportunities for investors. With advanced analytics and seamless execution, we redefine what's possible in private credit.\n\n## Overview  \nDelos’ Second Look Program with Upgrade evaluates a rejected Upgrade application for an unsecured personal loan. Through this ‘second look’, Delos applies its own proprietary credit risk model to identify overlooked, but creditworthy borrowers with attractive risk-adjusted returns.\n\n## Underwriting  \nThe underwriting of Delos’ Second Look Program consists of knock-outs, a credit risk model (CRM), and a price engine.\n\n### Data Sources  \nTwo primary data sources are utilized:  \n\n- **Application information** (e.g., debt-to-income ratio, stated income).  \n- **Credit bureau information** (e.g., age of oldest trade line, months since most recent delinquency, number of credit inquiries).  \n\nThe models employ a subset of these variables to facilitate automated underwriting.\n\n---\n\n## Knock-Outs  \nKnock-outs are automatic declines applied to applications. Regardless of CRM or pricing engine, applicants that meet these criteria are declined.\n\n| **Criteria** | **Knock-Out Definition** |\n|--------------|---------------------------|\n| General Credit Worthiness | fico9 < 660 |\n| Aggressive Credit Seeking | at104s ≥ 20 |\n| Thin File | at01s < 2 (or missing) |\n| Thin File | at02s < 1 (or missing) |\n| Young File | at20s < 36 |\n| Capacity To Repay | preloandti > 0.40 |\n| Bankruptcy | (s207s ≥ 0 & s207s ≤ 3) OR (s207a ≥ 0 & s207a ≤ 3) |\n| Recent Derogatory | g095s ≥ 0 AND g095s ≤ 3 |\n| Aggressive Credit Seeking | s114s > 4 |\n| Current Delinquency | s_at36 = 0 |\n| Non-Medical Collections | c_cxmd >= 3 and cv05 = 0 |\n\n---\n\n## Credit Risk Model (CRM)  \nThe CRM is an application screening model developed on Upgrade’s through-the-door population. It predicts probability of good using FICO’s Analytic Work Bench.\n\n**Key benefits:**  \n- Rigorous inference capabilities  \n- Ability to capture non-linear risk patterns  \n- Interpretable, explainable models  \n\nThe CRM uses a 30-points-doubles-the-odds convention, scaled so a score of 1000 corresponds to odds of 5.32 to 1. Loss forecasts are calibrated with awareness that rank-ordering can drift over time.\n\n---\n\n## Pricing Engine / Risk-Based Pricing  \nDelos’ price engine implements risk-based pricing, assigning rates based on CRM, loan amount, and loan term. Higher-scoring applicants receive lower rates.  \n\nPricing grids are documented in **Appendix 2**.\n\n---\n\n## Credit Policy  \nDelos’ underwriting guidelines and credit policy aim to maintain a resilient, sustainable portfolio.\n\n---\n\n## Program Description  \n**Loan products offered:**  \n- Fixed-rate, fully amortizing, simple-interest consumer unsecured installment loans  \n- Term: **36 months**  \n- Loan amounts: **$1,000 – $15,000**  \n\n**Rates & Fees:**  \n- APRs up to **35.97%**  \n- Origination fees up to **9.99%**  \n- Late fee: **$10**  \n- Payment failure fee: **$10**\n\n---\n\n## Steps in Second Look Processing  \n1. Customer applies on Upgrade site.  \n2. Upgrade performs soft credit pull at TransUnion.  \n3. If eligible, Upgrade sends app info + attributes to Delos API.  \n4. Delos returns custom scores.  \n5. Upgrade re-evaluates with Delos scores.  \n6. Upgrade sends final offers to Delos API.  \n7. Delos determines purchase eligibility.  \n8. Delos returns decision via API.  \n9. If declined → Upgrade shows decline + adverse action notice.  \n10. If approved → Upgrade displays offers.  \n11. Customer selects an offer.  \n12. Customer provides employment and verification info.  \n13. Customer agrees to disclosures.  \n14. Customer submits bank account details.  \n15. Application reviewed by Upgrade credit verification.  \n16. Upgrade sends updated info + offer to Delos API.  \n17. Delos makes final purchase decision.  \n18. If funded → Loan allocated to Delos investor account (purchased 2 days after funding).  \n\n---\n\n## Credit Monitoring  \nDelos employs front-end and back-end monitoring:\n\n- **Population Stability Reports** – Detect if population scores differently vs baseline.  \n- **Characteristic Analysis Reports** – Detect where inputs differ vs baseline.  \n- **Delinquency Distribution Reports (DDRs)** – Assess rank-ordering of risk.  \n- **Vintage Curves** – Track performance by vintage (Loss, Prepay, IRR, etc.).\n",
+    "version": "1.0",
+    "contact": {}
+  },
+  "tags": [
+    {
+      "name": "upgrade",
+      "description": ""
+    }
+  ],
+  "servers": [],
+  "components": {
+    "schemas": {
+      "ApplicationInformationDto": {
+        "type": "object",
+        "properties": {
+          "assetType": {
+            "enum": [
+              "LOAN",
+              "MASTER_LINE"
+            ],
+            "type": "string"
+          },
+          "desiredAmount": {
+            "type": "string",
+            "description": "Desired amount; numeric(24,12) represented as string",
+            "example": "15000.00"
+          },
+          "purpose": {
+            "enum": [
+              "CREDIT_CARD",
+              "DEBT_CONSOLIDATION",
+              "SMALL_BUSINESS",
+              "HOME_IMPROVEMENT",
+              "LARGE_PURCHASE",
+              "OTHER"
+            ],
+            "type": "string",
+            "description": "When assetType is MASTER_LINE, this defaults to OTHER."
+          },
+          "channel": {
+            "enum": [
+              "DIRECT_MAIL",
+              "DIRECT_MAIL_CUSTOM",
+              "OTHER",
+              "CREDIT_KARMA_LIGHTBOX",
+              "CREDIT_KARMA_OTHER"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "assetType",
+          "desiredAmount",
+          "purpose",
+          "channel"
+        ]
+      },
+      "OfferInformationDto": {
+        "type": "object",
+        "properties": {
+          "uuid": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "offerAmount": {
+            "type": "string",
+            "description": "numeric(24,2) as string",
+            "example": "10000.00"
+          },
+          "offerTerm": {
+            "type": "number",
+            "description": "Term in months",
+            "example": 36
+          },
+          "apr": {
+            "type": "string",
+            "description": "APR % as string numeric(24,12)",
+            "example": "19.68"
+          },
+          "interestRate": {
+            "type": "string",
+            "description": "Interest rate % as string numeric(24,12)",
+            "example": "15.99"
+          },
+          "monthlyPayment": {
+            "type": "string",
+            "description": "Monthly payment numeric(24,2) as string",
+            "example": "352.45"
+          },
+          "defaultOffer": {
+            "type": "boolean",
+            "description": "true if Upgrade's primary offer"
+          },
+          "postloanDtiIndividual": {
+            "type": "string",
+            "description": "Debt-to-income including offered loan; numeric(24,12) as string",
+            "example": "0.38"
+          },
+          "postloanDtiIndividualWithAdditional": {
+            "type": "string",
+            "description": "DTI including additional income; numeric(24,12) as string",
+            "example": "0.34"
+          },
+          "directPayRequired": {
+            "type": "boolean"
+          },
+          "discounts": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "DIRECT_PAY"
+              ]
+            }
+          }
+        },
+        "required": [
+          "uuid",
+          "offerAmount",
+          "offerTerm",
+          "apr",
+          "interestRate",
+          "monthlyPayment"
+        ]
+      },
+      "AdverseActionReasonDto": {
+        "type": "object",
+        "properties": {
+          "source": {
+            "enum": [
+              "core",
+              "upginternalscore4"
+            ],
+            "type": "string"
+          },
+          "code": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 1024
+          }
+        },
+        "required": [
+          "source"
+        ]
+      },
+      "EmploymentIncomeDto": {
+        "type": "object",
+        "properties": {
+          "paySchedule": {
+            "enum": [
+              "bimonthly",
+              "daily",
+              "hourly",
+              "monthly",
+              "semimonthly",
+              "weekly",
+              "yearly"
+            ],
+            "type": "string"
+          },
+          "amount": {
+            "type": "string",
+            "description": "Amount of income; numeric(24,12) as string",
+            "example": "82000.00"
+          }
+        }
+      },
+      "EmploymentHistoryItemDto": {
+        "type": "object",
+        "properties": {
+          "employerName": {
+            "type": "string",
+            "maxLength": 256
+          },
+          "occupation": {
+            "type": "string",
+            "maxLength": 256
+          },
+          "dateHired": {
+            "type": "string",
+            "format": "date"
+          },
+          "dateTerminated": {
+            "type": "string",
+            "format": "date"
+          },
+          "dateEffective": {
+            "type": "string",
+            "format": "date",
+            "description": "Date this info was last verified"
+          },
+          "dateOnFileSince": {
+            "type": "string",
+            "format": "date",
+            "description": "First reported to TransUnion"
+          },
+          "duration": {
+            "type": "number",
+            "description": "Years/months worked (integer count)"
+          },
+          "income": {
+            "$ref": "#/components/schemas/EmploymentIncomeDto"
+          },
+          "phoneNumber": {
+            "type": "string",
+            "maxLength": 256
+          }
+        }
+      },
+      "UnitDto": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string"
+          },
+          "number": {
+            "type": "string"
+          }
+        }
+      },
+      "StreetDto": {
+        "type": "object",
+        "properties": {
+          "numberHash": {
+            "type": "string",
+            "description": "Hashed house/PO box number"
+          },
+          "nameHash": {
+            "type": "string",
+            "description": "Hashed street / rural route / PO box text"
+          },
+          "preDirectional": {
+            "enum": [
+              "N",
+              "S",
+              "E",
+              "W",
+              "NE",
+              "SE",
+              "NW",
+              "SW"
+            ],
+            "type": "string"
+          },
+          "postDirectional": {
+            "enum": [
+              "N",
+              "S",
+              "E",
+              "W",
+              "NE",
+              "SE",
+              "NW",
+              "SW"
+            ],
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "description": "Primary street type (per TU codes)"
+          },
+          "unit": {
+            "$ref": "#/components/schemas/UnitDto"
+          }
+        }
+      },
+      "LocationDto": {
+        "type": "object",
+        "properties": {
+          "city": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string",
+            "description": "State code (per TU codes)"
+          },
+          "zipCode": {
+            "type": "string",
+            "description": "First three digits of ZIP code"
+          }
+        }
+      },
+      "ResidenceDto": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "enum": [
+              "own",
+              "rent",
+              "board"
+            ],
+            "type": "string"
+          }
+        }
+      },
+      "AddressHistoryItemDto": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "enum": [
+              "current",
+              "previous",
+              "secondPrevious",
+              "future"
+            ],
+            "type": "string"
+          },
+          "dateReported": {
+            "type": "string",
+            "format": "date"
+          },
+          "street": {
+            "$ref": "#/components/schemas/StreetDto"
+          },
+          "location": {
+            "$ref": "#/components/schemas/LocationDto"
+          },
+          "residence": {
+            "$ref": "#/components/schemas/ResidenceDto"
+          },
+          "duration": {
+            "type": "string",
+            "description": "Length in years at the address (free-form)"
+          }
+        }
+      },
+      "CreditInformationDto": {
+        "type": "object",
+        "properties": {
+          "fico9": {
+            "type": "number",
+            "description": "FICO 9 (3-digit integer)"
+          }
+        },
+        "required": [
+          "fico9"
+        ]
+      },
+      "CreditAttributeDto": {
+        "type": "object",
+        "properties": {
+          "source": {
+            "enum": [
+              "UPGRADE_INTERNAL",
+              "TRANSUNION",
+              "IDA_FCRA",
+              "LEXIS_NEXIS"
+            ],
+            "type": "string"
+          },
+          "numericAttributes": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "numeric(24,12) values as strings"
+          },
+          "booleanAttributes": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "boolean"
+            }
+          },
+          "textAttributes": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "source"
+        ]
+      },
+      "CreditInformationBySourceDto": {
+        "type": "object",
+        "properties": {
+          "upgFtr1Bin": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 6
+          },
+          "creditInformationBySource": {
+            "type": "string",
+            "description": "Container; Upgrade uses `creditAttributes` array by source"
+          },
+          "creditAttributes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CreditAttributeDto"
+            }
+          }
+        },
+        "required": [
+          "creditAttributes"
+        ]
+      },
+      "PriorLoanInformationItemDto": {
+        "type": "object",
+        "properties": {
+          "assetType": {
+            "enum": [
+              "LOAN",
+              "MASTER_LINE"
+            ],
+            "type": "string"
+          },
+          "applicationUuid": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "contractDate": {
+            "type": "string",
+            "format": "date",
+            "description": "Contract / originated date"
+          },
+          "balance": {
+            "type": "string",
+            "description": "BigDecimal as string"
+          },
+          "status": {
+            "enum": [
+              "OPEN",
+              "CLOSED_PAIDOFF",
+              "CLOSED_CANCEL",
+              "CLOSED_CHARGEOFF"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "assetType",
+          "applicationUuid",
+          "contractDate",
+          "balance",
+          "status"
+        ]
+      },
+      "VehicleInformationDto": {
+        "type": "object",
+        "properties": {
+          "year": {
+            "type": "number"
+          },
+          "make": {
+            "type": "string"
+          },
+          "model": {
+            "type": "string"
+          },
+          "trim": {
+            "type": "string"
+          },
+          "mileage": {
+            "type": "number"
+          },
+          "value": {
+            "type": "string",
+            "description": "BigDecimal as string"
+          },
+          "confirmedCollateral": {
+            "type": "boolean"
+          },
+          "existingLoanOriginalBalance": {
+            "type": "string",
+            "description": "BigDecimal as string"
+          },
+          "existingLoanPayoffRemainingBalance": {
+            "type": "string",
+            "description": "BigDecimal as string"
+          },
+          "existingLoanMonthlyPayment": {
+            "type": "string",
+            "description": "BigDecimal as string"
+          },
+          "existingLoanTerm": {
+            "type": "number"
+          },
+          "existingLoanOpenDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "existingLoanPayments": {
+            "type": "number"
+          }
+        }
+      },
+      "GetOffersRequestDto": {
+        "type": "object",
+        "properties": {
+          "requestUuid": {
+            "type": "string",
+            "format": "uuid",
+            "description": "uuid/v4"
+          },
+          "requestType": {
+            "enum": [
+              "SCORING",
+              "ALLOCATION",
+              "INCOME_VERIFICATION"
+            ],
+            "type": "string"
+          },
+          "applicationUuid": {
+            "type": "string",
+            "format": "uuid",
+            "description": "uuid/v4"
+          },
+          "verificationReasons": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "INCOME",
+                "COLLATERAL"
+              ]
+            }
+          },
+          "applicationInformation": {
+            "$ref": "#/components/schemas/ApplicationInformationDto"
+          },
+          "offerInformation": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OfferInformationDto"
+            }
+          },
+          "adverseActionReasons": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AdverseActionReasonDto"
+            }
+          },
+          "employmentHistory": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/EmploymentHistoryItemDto"
+            }
+          },
+          "addressHistory": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AddressHistoryItemDto"
+            }
+          },
+          "creditInformation": {
+            "$ref": "#/components/schemas/CreditInformationDto"
+          },
+          "creditInformationBySource": {
+            "$ref": "#/components/schemas/CreditInformationBySourceDto"
+          },
+          "priorLoanInformation": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PriorLoanInformationItemDto"
+            }
+          },
+          "vehicleInformation": {
+            "$ref": "#/components/schemas/VehicleInformationDto"
+          },
+          "coreOfferInformation": {
+            "description": "Primary/core offers",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OfferInformationDto"
+            }
+          }
+        },
+        "required": [
+          "requestUuid",
+          "requestType",
+          "applicationUuid",
+          "applicationInformation"
+        ]
+      },
+      "OfferScoreDto": {
+        "type": "object",
+        "properties": {
+          "modelName": {
+            "type": "string",
+            "description": "Offer scoring model name"
+          },
+          "score": {
+            "type": "string",
+            "description": "Offer scoring value, numeric(36,24) as string"
+          }
+        },
+        "required": [
+          "modelName",
+          "score"
+        ]
+      },
+      "AllocatedInvestmentAccountDto": {
+        "type": "object",
+        "properties": {
+          "number": {
+            "type": "string",
+            "description": "Unique identifier of the investment account"
+          },
+          "name": {
+            "type": "string",
+            "description": "Name of the investment account"
+          }
+        },
+        "required": [
+          "number",
+          "name"
+        ]
+      },
+      "ResultDetailDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Custom field name"
+          },
+          "value": {
+            "type": "string",
+            "description": "Custom field value",
+            "maxLength": 1024
+          }
+        },
+        "required": [
+          "name",
+          "value"
+        ]
+      },
+      "OfferDecisionDto": {
+        "type": "object",
+        "properties": {
+          "uuid": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "interestRate": {
+            "type": "string",
+            "description": "Interest rate assigned by model, numeric(24,12) as string"
+          },
+          "score": {
+            "type": "string",
+            "description": "Internal offer score, numeric(36,24) as string"
+          },
+          "decisionStatus": {
+            "enum": [
+              "APPROVED",
+              "DECLINED"
+            ],
+            "type": "string"
+          },
+          "scores": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OfferScoreDto"
+            }
+          },
+          "allocatedInvestmentAccount": {
+            "$ref": "#/components/schemas/AllocatedInvestmentAccountDto"
+          },
+          "resultDetails": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ResultDetailDto"
+            }
+          }
+        },
+        "required": [
+          "uuid",
+          "decisionStatus"
+        ]
+      },
+      "AdverseActionReasonResponseDto": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 1024
+          }
+        },
+        "required": [
+          "code",
+          "description"
+        ]
+      },
+      "GetOffersResponseDto": {
+        "type": "object",
+        "properties": {
+          "applicationUuid": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "modelName": {
+            "type": "string",
+            "description": "Your offer model name"
+          },
+          "policyVersion": {
+            "type": "string",
+            "description": "Your credit policy version"
+          },
+          "testCell": {
+            "type": "string",
+            "description": "Your test cell (e.g. pricing test cell)"
+          },
+          "offers": {
+            "description": "Your decision result for each individual offer sent on the request.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OfferDecisionDto"
+            }
+          },
+          "adverseActionReasons": {
+            "description": "Adverse action reasons if no offers are taken. Required if no purchase intent.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AdverseActionReasonResponseDto"
+            }
+          }
+        },
+        "required": [
+          "applicationUuid",
+          "offers"
+        ]
+      }
+    }
+  }
+}

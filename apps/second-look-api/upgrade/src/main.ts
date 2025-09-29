@@ -12,6 +12,7 @@ import { AppModule } from './app/app.module';
 import DESCRIPTION from '../docs/guidelines.md';
 
 import { capitalCase } from 'change-case';
+import fs from 'fs';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -26,10 +27,10 @@ async function bootstrap() {
 
   const document = SwaggerModule.createDocument(app, config, {
     // linkNameFactory:
-    operationIdFactory: (controllerKey, methodKey) =>
-      capitalCase(methodKey),
+    operationIdFactory: (controllerKey, methodKey) => capitalCase(methodKey),
   });
 
+  fs.writeFileSync('./swagger.json', JSON.stringify(document, null, 2));
   const StoplightElements = new StoplightElementsModule(app, document, {
     router: 'hash',
     layout: 'sidebar',
